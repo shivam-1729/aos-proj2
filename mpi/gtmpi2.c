@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "gtmpi.h"
 
+// Todo(Shivam): Disemination barrier
 void gtmpi_init(int num_processes){
 
 }

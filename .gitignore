@@ -50,3 +50,10 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Custom stuff
+.vagrant*
+examples/OpenMP/hello_world
+examples/OpenMP/parallel_for
+examples/OpenMP/priv_vars
+examples/OpenMP/shared_vars
