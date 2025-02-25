@@ -57,3 +57,9 @@ examples/OpenMP/hello_world
 examples/OpenMP/parallel_for
 examples/OpenMP/priv_vars
 examples/OpenMP/shared_vars
+examples/MPI/*
+.DS_Store
+mpi/mpi1
+mpi/mpi2
+omp/mp1
+omp/mp2

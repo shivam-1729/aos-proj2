@@ -11,6 +11,9 @@ MP_SRC2 = gtmp2.c
 
 all: mp1 mp2
 
+# The command below compiles the target 'mp1' using the source file 'gtmp1.c' and the object file 'harness.o'.
+# The 'harness.o' file is an object file that contains compiled code from the 'harness.c' source file, 
+# which likely includes the main function and any necessary setup for the OpenMP program.
 mp1: gtmp1.c harness.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
 
