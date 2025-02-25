@@ -7,7 +7,6 @@ bool DEBUG = false;
 #define debug_print(fmt, ...) do { if (DEBUG) printf(fmt, __VA_ARGS__); } while (0) 
 // Not sure of the performance hit of these if statements, but it'll definitely be lower than printf
 
-
 int threads_to_wait_for;
 int thread_count;
 bool sense = false;
@@ -27,8 +26,8 @@ void gtmp_barrier(){
     
     // #pragma omp atomic
     //     threads_to_wait_for--;
-    threads_to_wait_for = __sync_fetch_and_sub(&threads_to_wait_for, 1);
-    threads_to_wait_for--;
+    threads_to_wait_for = __sync_fetch_and_sub(&threads_to_wait_for, 1) - 1;
+    // __sync_sub_and_fetch() was not atomic
 
     debug_print("[%d] threads_to_wait_for is now: %d\n", thread_id, threads_to_wait_for);
 
@@ -38,7 +37,7 @@ void gtmp_barrier(){
         sense = my_sense;
     } else {
         // printf("Thread: %d will now spin\n", thread_id);
-        while(my_sense != sense);
+        while(my_sense != sense);           // the assumption here is that `sense` and `my_sense` are a cached variables
     }
 }
 
