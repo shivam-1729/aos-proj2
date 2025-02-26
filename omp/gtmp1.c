@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include "gtmp.h"
 
-bool DEBUG = false;
+bool DEBUG = true;
 #define debug_print(fmt, ...) do { if (DEBUG) printf(fmt, __VA_ARGS__); } while (0) 
 // Not sure of the performance hit of these if statements, but it'll definitely be lower than printf
 
@@ -24,12 +24,15 @@ void gtmp_barrier(){
 
     int thread_id = omp_get_thread_num();
     
-    // #pragma omp atomic
+    // #pragma omp atomic 
     //     threads_to_wait_for--;
-    threads_to_wait_for = __sync_fetch_and_sub(&threads_to_wait_for, 1) - 1;
+    
+    __sync_fetch_and_sub(&threads_to_wait_for, 1);
+    // threads_to_wait_for = __sync_fetch_and_sub(&threads_to_wait_for, 1) - 1;
     // __sync_sub_and_fetch() was not atomic
 
-    debug_print("[%d] threads_to_wait_for is now: %d\n", thread_id, threads_to_wait_for);
+    // debug_print("[%d] threads_to_wait_for is now: %d\n", thread_id, threads_to_wait_for);
+    // ^ This print is useless because the value changes between the print & the if() check below
 
     if (0 == threads_to_wait_for) {
         debug_print("Thread: %d has now reset the barrier\n", thread_id);
