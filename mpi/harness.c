@@ -22,9 +22,9 @@ int main(int argc, char** argv)
   double start_time;
   
   for(int k = 0; k < num_rounds; k++){
-    start_time = MPI_Wtime();
+    start_time = MPI_Wtime() * 1e6;
     gtmpi_barrier();
-    round_latencies[k] = MPI_Wtime() - start_time;
+    round_latencies[k] = MPI_Wtime() * 1e6 - start_time;
   }
 
   double max_latency;
@@ -51,7 +51,7 @@ int main(int argc, char** argv)
                   max_latency = all_latencies[i * num_rounds + k];
               }
           }
-          printf("[%d] Max latency for round %d: %lf\n", rank, k, max_latency);
+          printf("[%d] Max latency for round %d: %.3lf µs\n", rank, k, max_latency);
       }
       free(all_latencies);
   }
