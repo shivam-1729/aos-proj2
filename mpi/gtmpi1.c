@@ -23,6 +23,7 @@ int process_cnt;
 void gtmpi_init(int num_processes) {
     // node = malloc(num_processes * sizeof(TreeNode));
     process_cnt = num_processes;
+    // Fetching process_cnt from MPI doesn't work
     // printf("Init completed\n");  // This is being called by every process
 }
 
@@ -112,36 +113,3 @@ void gtmpi_finalize(){
     // No action required to clean up after using MPI
     // printf("Finalize completed\n"); // This is being called by every process
 }
-
-// type treenode record
-// parentsense Boolean
-// parentpointer Boolean
-// childpointers array of Boolean
-// havechild array of Boolean
-// childnotready array of Boolean
-// dummy Boolean pseudodata
-// shared node array P of treenode
-// nodesmy_id is allocated in shared memory
-// locally accessible to processor my_id
-// processor private my_id integer a unique virtual processor index
-// processor private sense Boolean
-// on processor i sense is initially true
-// in nodesi
-// havechildj true if ij P otherwise false
-// parentpointer nodesfloori ch ildno tread yi mod
-// or dummy if i
-// childpointers nodesipar entse nse or dummy if i P
-// childpointers nodesipar entse nse or dummy if i P
-// initially childnotready havechild and parentsense false
-// procedure treebarrier
-// with nodesmy_id do
-// repeat until childnotready false false false false
-// childnotready havechild prepare for next barrier
-// parentpointer false let parent know Im ready
-// if not root wait until my parent signals wakeup
-// if my_id
-// repeat until parentsense sense
-// signal children in wakeup tree
-// childpointers sense
-// childpointers sense
-// sense not sense
