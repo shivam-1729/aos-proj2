@@ -6,7 +6,7 @@
 #SBATCH -o %x.out           
 #SBATCH --error %x.err
 
-# Command to run: sbatch threads.sbatch --job-name mp1_1 --cpus-per-task 4 ./mp1 4 
+# Command to run: sbatch --job-name=mp1_1 --cpus-per-task=4 threads.sbatch ./mp1 4 
 # %x is job name
 
 echo "Started on `/bin/hostname` with $SLURM_CPUS_PER_TASK threads & cli param as $2"
