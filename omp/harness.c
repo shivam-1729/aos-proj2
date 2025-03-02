@@ -24,16 +24,16 @@ int main(int argc, char **argv)
 
   double all_latencies[num_rounds][num_threads];
 
-#pragma omp parallel shared(num_threads, all_latencies)
+  #pragma omp parallel shared(num_threads, all_latencies)
   {
     double start_time;
     int thread_id = omp_get_thread_num();
 
-    for (int i = 0; i < num_rounds; i++)
+    for (int k = 0; k < num_rounds; k++)
     {
       start_time = omp_get_wtime() * 1e6; // todo(Gaurav): check if walltime should be used
       gtmp_barrier();
-      all_latencies[i][thread_id] = omp_get_wtime() * 1e6 - start_time; // Can this array layout cause cache coherence problems?
+      all_latencies[k][thread_id] = omp_get_wtime() * 1e6 - start_time; // Can this array layout cause cache coherence problems?
     }
     // todo(Gaurav): another options is move the OMP parallel block inside the loop. start & end time calculation can be done outside the parallel bock to avoid calculating the max
     // ^ This approach cannot be used for MPI though
@@ -41,6 +41,7 @@ int main(int argc, char **argv)
 
   gtmp_finalize();
 
+  double latency_sum = 0.0;
   double max_latency;
   for (int k = 0; k < num_rounds; k++)
   {
@@ -52,8 +53,10 @@ int main(int argc, char **argv)
         max_latency = all_latencies[k][i];
       }
     }
-    printf("Max latency for round %d: %.3lf µs\n", k, max_latency); // todo(Gaurav): can also do max_end_time - min_end_time
+    latency_sum += max_latency;
+    printf("Max latency for round %d: %.3lf µs\n", k, max_latency); // todo(Gaurav): can also do max_end_time - min_start_time
   }
+  printf("Avg latency across all rounds: %.3lf µs\n", latency_sum/ num_rounds);
 
   return 0;
 }

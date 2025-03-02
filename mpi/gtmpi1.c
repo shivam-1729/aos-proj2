@@ -27,7 +27,11 @@ void gtmpi_init(int num_processes) {
     // printf("Init completed\n");  // This is being called by every process
 }
 
-void wake_up(int my_id) {
+void trigger_wake_up() {
+
+}
+
+void mpi_contruct_wake_up_tree(int my_id) {
     int parent_index = (my_id - 1) / WAKE_UP_N_ARY;      // right shift by 2 would already be optimized by a good compiler.
     bool is_parent = (WAKE_UP_N_ARY*my_id + 1) < process_cnt;
     MPI_Status mpi_result;
@@ -51,7 +55,7 @@ void wake_up(int my_id) {
 }
 
 // node is passed by value
-void arrival_tree(int my_id) {
+void mpi_construct_arrival_tree(int my_id) {
     // if (my_id < 0 || my_id >= process_cnt) {
     //     fprintf(stderr, "Error: Process ID %d is out of bounds (0 to %d)\n", my_id, process_cnt - 1);
     //     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
@@ -92,6 +96,10 @@ void arrival_tree(int my_id) {
     // }
 }
 
+void mpi_trigger_wake_up() {
+    // todo(Gaurav): TBD
+}
+
 void gtmpi_barrier(){
     // bool sense = true;
     int my_id;
@@ -105,8 +113,9 @@ void gtmpi_barrier(){
     // }
     // }
 
-    arrival_tree(my_id);
-    wake_up(my_id);
+    mpi_construct_arrival_tree(my_id);
+    mpi_contruct_wake_up_tree(my_id);
+    mpi_trigger_wake_up();
 }
 
 void gtmpi_finalize(){
