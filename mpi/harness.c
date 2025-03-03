@@ -42,6 +42,7 @@ int main(int argc, char** argv)
   // Gather the round latencies from all processes to the root process
   MPI_Gather(round_latencies, num_rounds, MPI_DOUBLE, all_latencies, num_rounds, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
+  double latency_sum = 0.0;
   // Calculate the maximum latency for each round only on the root process
   if (all_latencies != NULL) {
       for (int k = 0; k < num_rounds; k++) {
@@ -51,8 +52,10 @@ int main(int argc, char** argv)
                   max_latency = all_latencies[i * num_rounds + k];
               }
           }
+          latency_sum += max_latency;
           printf("[%d] Max latency for round %d: %.3lf µs\n", rank, k, max_latency);
       }
+      printf("Avg latency across all rounds: %.3lf µs\n", latency_sum/ num_rounds);
       free(all_latencies);
   }
 
