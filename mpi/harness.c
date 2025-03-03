@@ -35,7 +35,7 @@ int main(int argc, char** argv)
   if (num_processes > 1) {
       // Only allocate memory for the root process
       if (0 == rank) {
-        all_latencies = (double*)malloc(num_processes * sizeof(double));
+        all_latencies = (double*)malloc(num_processes * num_rounds * sizeof(double));
       }
   }
 
