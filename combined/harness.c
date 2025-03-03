@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <mpi.h>
+#include <omp.h>
 #include "gtcombined.h"
 
 int main(int argc, char **argv)
@@ -10,14 +11,14 @@ int main(int argc, char **argv)
   MPI_Init(&argc, &argv);
   double round_latencies[num_rounds];
 
-  if (argc < 3)
+  if (argc < 2)
   {
-    fprintf(stderr, "Usage: ./harness [NUM_PROCS] [NUM_THREADS]\n");
+    fprintf(stderr, "Usage: ./harness [NUM_THREADS]\n");
     exit(EXIT_FAILURE);
   }
 
-  num_processes = strtol(argv[1], NULL, 10);
-  num_threads = strtol(argv[2], NULL, 10);
+  MPI_Comm_size(MPI_COMM_WORLD, &num_processes); 
+  num_threads = strtol(argv[1], NULL, 10);
 
   omp_set_dynamic(0);
   if (omp_get_dynamic())
@@ -27,12 +28,18 @@ int main(int argc, char **argv)
 
   gtcombined_init(num_processes, num_threads);
 
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
   double start_time;
 
-  #pragma omp parallel shared(num_threads) {
+  #pragma omp parallel shared(num_threads)
+  {
     for (int k = 0; k < num_rounds; k++)
     {
       start_time = MPI_Wtime() * 1e6;
+      int t_num = omp_get_thread_num();
+      printf("round [%d]: process - [%d] thread - [%d]\n", k, rank, t_num);
       gtcombined_barrier();
       round_latencies[k] = MPI_Wtime() * 1e6 - start_time;
     }
@@ -41,8 +48,6 @@ int main(int argc, char **argv)
   // todo(Gaurav): latency calculation
   double max_latency;
   double *all_latencies = NULL;
-  int rank;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   if (num_processes > 1)
   {

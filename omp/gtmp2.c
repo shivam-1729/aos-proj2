@@ -16,14 +16,17 @@ typedef struct {
     bool dummy;
 	bool sense;
 }Node;
-
+// union {
+//     uint8_t singlt[4]
+//     uint32_t all
+// }
 static Node* threads;
 
 void gtmp_init(int num_threads){
-    threads = (Node* )malloc(sizeof(Node) * num_threads);
+    threads = (Node* )calloc(num_threads, sizeof(Node));
     memset(threads, 0, sizeof(Node) * num_threads);
 
-    printf("Init completed\n");
+    printf("OMP Init completed\n");
 
     for (int i=0; i<num_threads; i++) 
     {
@@ -69,24 +72,14 @@ void gtmp_init(int num_threads){
 	}
 }
 
-void omp_construct_arrival_tree(){
-
-}
-void omp_contruct_wake_up_tree(){
-
-}
-void omp_trigger_wake_up(){
-    
-}
-
-void gtmp_barrier(){
+void omp_arrival_phase(){
     int t_num = omp_get_thread_num();
-	printf("thread %d entered barrier\n", t_num);
-    fflush(stdout);
+	printf("Arrived at omp barrier : thread [%d]\n", t_num);
+    //fflush(stdout);
 
     for (int j = 0; j < 4; j++)
     {
-        while (threads[t_num].childnotready[j]) {}
+        while (threads[t_num].childnotready[j] == true);
     }
 
 	for (int j = 0; j < 4; j++)
@@ -95,18 +88,35 @@ void gtmp_barrier(){
     }
     
     *threads[t_num].parentpointer = false;
-	
-    if (t_num != 0)
-    {
-        while(threads[t_num].parentsense != threads[t_num].sense);
-    }
-		
-	*threads[t_num].childpointers[0] = threads[t_num].sense;
+}
+
+void omp_trigger_wake_up(){
+    int t_num = omp_get_thread_num();
+    printf("Triggering omp wake up : thread [%d]\n", t_num);
+    *threads[t_num].childpointers[0] = threads[t_num].sense;
 	*threads[t_num].childpointers[1] = threads[t_num].sense;
 
 	threads[t_num].sense = !threads[t_num].sense;
-    printf("thread %d exited barrier\n", t_num);
-    fflush(stdout);
+}
+
+void omp_wake_up_phase(){
+    int t_num = omp_get_thread_num();
+    if (t_num == 0) return;
+    
+    while(threads[t_num].parentsense != threads[t_num].sense);
+    omp_trigger_wake_up();
+}
+
+void gtmp_barrier(){
+    omp_arrival_phase();
+    omp_wake_up_phase();
+
+    int t_num = omp_get_thread_num();
+    if(t_num == 0){
+        omp_trigger_wake_up();
+    }	
+    //printf("thread %d exited barrier\n", t_num);
+    //fflush(stdout);
 }
 
 void gtmp_finalize(){
