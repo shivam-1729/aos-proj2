@@ -5,7 +5,7 @@
 
 int main(int argc, char **argv)
 {
-  int num_threads, num_rounds = 10;
+  int num_threads, num_rounds = 1000;
 
   if (argc < 2)
   {
