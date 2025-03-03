@@ -8,15 +8,11 @@ LDLIBS = $(OMPLIBS) -lm
 
 all: combined 
 
-SRCS := $(wildcard *.c)
-OBJS = $(SRCS:.c=.o)
-
-%.o: %.c
+harness.o: harness.c
 	$(MPICC) -c $(CFLAGS) $< -o $@
 
-combined: $(OBJS) 
-	$(MPICC) -o $@ $(CFLAGS) $(LDFLAGS) $^ $(LDLIBS)
+combined: gtcombined.c harness.o
+	$(MPICC) $(CFLAGS) -o $@ gtcombined.c ../omp/gtmp1.c ../mpi/gtmpi2.c harness.o $(LDLIBS)
 
 clean:
 	rm -rf *.o *.dSYM combined
-
