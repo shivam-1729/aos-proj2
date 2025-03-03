@@ -41,7 +41,7 @@ void mpi_trigger_wake_up() {
     }
 }
 
-void mpi_contruct_wake_up_tree() {
+void mpi_wake_up_phase() {
     int parent_index = (my_id - 1) / WAKE_UP_N_ARY;      // right shift by 2 would already be optimized by a good compiler.
     bool is_parent = (WAKE_UP_N_ARY*my_id + 1) < process_cnt;
     MPI_Status mpi_result;
@@ -59,7 +59,7 @@ void mpi_contruct_wake_up_tree() {
     }
 }
 
-void mpi_construct_arrival_tree() {
+void mpi_arrival_phase() {
     // if (my_id < 0 || my_id >= process_cnt) {
     //     fprintf(stderr, "Error: Process ID %d is out of bounds (0 to %d)\n", my_id, process_cnt - 1);
     //     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
@@ -109,11 +109,11 @@ void gtmpi_barrier(){
     // }
     // }
 
-    printf("[%d] Before mpi_construct_arrival_tree\n", my_id);
-    mpi_construct_arrival_tree();
-    printf("[%d] Before mpi_contruct_wake_up_tree\n", my_id);
-    mpi_contruct_wake_up_tree();
-    mpi_trigger_wake_up();
+    mpi_arrival_phase();
+    mpi_wake_up_phase();
+    if (0 == my_id) {
+        mpi_trigger_wake_up();
+    }
 }
 
 void gtmpi_finalize(){

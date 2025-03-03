@@ -5,7 +5,7 @@
 
 int main(int argc, char** argv)
 {
-  int num_processes, num_rounds = 3;
+  int num_processes, num_rounds = 1;
 
   MPI_Init(&argc, &argv);
   double round_latencies[num_rounds];
