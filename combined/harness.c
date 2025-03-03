@@ -8,10 +8,9 @@
 
 int main(int argc, char **argv)
 {
-  int num_processes, num_threads, num_rounds = 1;
+  int num_processes, num_threads, num_rounds = 1000;
 
   MPI_Init(&argc, &argv);
-  double round_latencies[num_rounds];
 
   if (argc < 2)
   {
@@ -33,6 +32,8 @@ int main(int argc, char **argv)
   //gtmp_init(num_threads);
 
   int rank;
+  double round_thread_latencies[num_rounds][num_threads];
+  double round_node_latencies[num_rounds];
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   double start_time;
@@ -57,43 +58,52 @@ int main(int argc, char **argv)
       //     printf("round [%d]: process - [%d] thread - [%d] completed barrier\n", k, rank, t_num);
       // }
       gtcombined_barrier();
-      round_latencies[k] = MPI_Wtime() * 1e6 - start_time;
+      round_thread_latencies[k][t_num] = MPI_Wtime() * 1e6 - start_time;
       printf("round [%d]: process - [%d] thread - [%d] completed barrier\n", k, rank, t_num);
     }
   }
 
-  // todo(Gaurav): latency calculation
+  // Calculating max latency among threads on a node per round
+  double latency_sum = 0.0;
   double max_latency;
-  double *all_latencies = NULL;
-
-  if (num_processes > 1)
+  for (int k = 0; k < num_rounds; k++)
   {
-    // Only allocate memory for the root process
-    if (0 == rank)
+    max_latency = round_thread_latencies[k][0];
+    for (int i = 1; i < num_threads; i++)
     {
-      all_latencies = (double *)malloc(num_processes * sizeof(double));
+      if (round_thread_latencies[k][i] > max_latency)
+      {
+        max_latency = round_thread_latencies[k][i];
+      }
     }
+    round_node_latencies[k] = max_latency;
+    // printf("[%d] Thread max latency for round %d: %.3lf µs\n", rank, k, max_latency); // todo(Gaurav): can also do max_end_time - min_start_time
   }
 
+  // Calculating avg latency of threads on a node per round
   // Gather the round latencies from all processes to the root process
-  MPI_Gather(round_latencies, num_rounds, MPI_DOUBLE, all_latencies, num_rounds, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  MPI_Gather(round_node_latencies, num_rounds, MPI_DOUBLE, NULL, 0, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
   // Calculate the maximum latency for each round only on the root process
-  if (all_latencies != NULL)
+  if (0 == rank)
   {
+    double all_latencies[num_processes][num_rounds];
+    MPI_Gather(round_node_latencies, num_rounds, MPI_DOUBLE, all_latencies, num_rounds, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
     for (int k = 0; k < num_rounds; k++)
     {
-      max_latency = all_latencies[k];
+      max_latency = all_latencies[0][k];
       for (int i = 1; i < num_processes; i++)
       {
-        if (all_latencies[i * num_rounds + k] > max_latency)
+        if (all_latencies[i][k] > max_latency)
         {
-          max_latency = all_latencies[i * num_rounds + k];
+          max_latency = all_latencies[i][k];
         }
       }
+      latency_sum += max_latency;
       printf("[%d] Max latency for round %d: %.3lf µs\n", rank, k, max_latency);
     }
-    free(all_latencies);
+    printf("Avg latency across all rounds: %.3lf µs\n", latency_sum/ num_rounds);
   }
 
   gtcombined_finalize();

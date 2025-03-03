@@ -46,7 +46,7 @@ int main(int argc, char** argv)
   // Calculate the maximum latency for each round only on the root process
   if (all_latencies != NULL) {
       for (int k = 0; k < num_rounds; k++) {
-          max_latency = all_latencies[k];
+          max_latency = all_latencies[0 * num_rounds + k];
           for (int i = 1; i < num_processes; i++) {
               if (all_latencies[i * num_rounds + k] > max_latency) {
                   max_latency = all_latencies[i * num_rounds + k];
