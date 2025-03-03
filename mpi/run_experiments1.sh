@@ -1,4 +1,3 @@
-sbatch --job-name=mpi1_1 --nodes=1 nodes1.sbatch ./mpi1 1
 sbatch --job-name=mpi1_2 --nodes=2 nodes1.sbatch ./mpi1 2
 sbatch --job-name=mpi1_3 --nodes=3 nodes1.sbatch ./mpi1 3
 sbatch --job-name=mpi1_4 --nodes=4 nodes1.sbatch ./mpi1 4
@@ -6,3 +5,7 @@ sbatch --job-name=mpi1_5 --nodes=5 nodes1.sbatch ./mpi1 5
 sbatch --job-name=mpi1_6 --nodes=6 nodes1.sbatch ./mpi1 6
 sbatch --job-name=mpi1_7 --nodes=7 nodes1.sbatch ./mpi1 7
 sbatch --job-name=mpi1_8 --nodes=8 nodes1.sbatch ./mpi1 8
+sbatch --job-name=mpi1_9 --nodes=9 nodes1.sbatch ./mpi1 9
+sbatch --job-name=mpi1_10 --nodes=10 nodes1.sbatch ./mpi1 10
+sbatch --job-name=mpi1_11 --nodes=11 nodes1.sbatch ./mpi1 11
+sbatch --job-name=mpi1_12 --nodes=12 nodes1.sbatch ./mpi1 12
