@@ -15,4 +15,5 @@ module load gcc/12.3.0 mvapich2/2.3.7-1
 mpicc -c -g -Wall -std=gnu99 -I. harness.c -o harness.o
 mpicc -o mpi1 -g -Wall -std=gnu99 -I.  gtmpi1.c harness.o -lm
 mpicc -o mpi2 -g -Wall -std=gnu99 -I.  gtmpi2.c harness.o -lm
-srun mpiexec --ntasks $2 ./mpi2 $2
+mpiexec --ntasks $2 ./mpi2 $2
+# Using srun for the above command leads to: mpiexec: Job 1496236 step creation temporarily disabled, retrying (Requested nodes are busy)

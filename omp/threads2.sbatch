@@ -15,4 +15,4 @@ module load gcc/12.3.0 mvapich2/2.3.7-1
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
 make
-srun ./mp2 $2
+./mp2 $2
