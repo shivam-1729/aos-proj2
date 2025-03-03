@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <mpi.h>
 #include <omp.h>
+// #include "../omp/gtmp2.c"
+// #include "../mpi/gtmpi1.c"
 #include "gtcombined.h"
 
 int main(int argc, char **argv)
@@ -27,6 +29,8 @@ int main(int argc, char **argv)
   omp_set_num_threads(num_threads);
 
   gtcombined_init(num_processes, num_threads);
+  //gtmpi_init(num_processes);
+  //gtmp_init(num_threads);
 
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -40,8 +44,21 @@ int main(int argc, char **argv)
       start_time = MPI_Wtime() * 1e6;
       int t_num = omp_get_thread_num();
       printf("round [%d]: process - [%d] thread - [%d]\n", k, rank, t_num);
+      // if (t_num == 0)
+      // {
+      //     gtmpi_barrier();
+      //     gtmp_barrier();
+
+      //     printf("round [%d]: process - [%d] thread - [%d] completed barrier\n", k, rank, t_num);
+      // }
+      // else
+      // {
+      //     gtmp_barrier();
+      //     printf("round [%d]: process - [%d] thread - [%d] completed barrier\n", k, rank, t_num);
+      // }
       gtcombined_barrier();
       round_latencies[k] = MPI_Wtime() * 1e6 - start_time;
+      printf("round [%d]: process - [%d] thread - [%d] completed barrier\n", k, rank, t_num);
     }
   }
 
@@ -80,6 +97,8 @@ int main(int argc, char **argv)
   }
 
   gtcombined_finalize();
+  //gtmp_finalize();
+  //gtmpi_finalize();
 
   MPI_Finalize();
 

@@ -20,7 +20,7 @@ typedef struct {
 //     uint8_t singlt[4]
 //     uint32_t all
 // }
-static Node* threads;
+Node* threads;
 
 void gtmp_init(int num_threads){
     threads = (Node* )calloc(num_threads, sizeof(Node));
