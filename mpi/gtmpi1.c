@@ -109,7 +109,9 @@ void gtmpi_barrier(){
     // }
     // }
 
+    printf("[%d] Before mpi_construct_arrival_tree\n", my_id);
     mpi_construct_arrival_tree();
+    printf("[%d] Before mpi_contruct_wake_up_tree\n", my_id);
     mpi_contruct_wake_up_tree();
     mpi_trigger_wake_up();
 }
