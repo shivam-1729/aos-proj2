@@ -11,7 +11,7 @@ sbatch --job-name=combined_4n_2t --nodes=4 --cpus-per-task=2 combined.sbatch ./c
 sbatch --job-name=combined_4n_4t --nodes=4 --cpus-per-task=4 combined.sbatch ./combined 4
 sbatch --job-name=combined_4n_6t --nodes=4 --cpus-per-task=6 combined.sbatch ./combined 6
 sbatch --job-name=combined_4n_8t --nodes=4 --cpus-per-task=8 combined.sbatch ./combined 8
-sbatch --job-name=combined_4n_10t --nodes=4 --cpus-per-qtask=10 combined.sbatch ./combined 10
+sbatch --job-name=combined_4n_10t --nodes=4 --cpus-per-task=10 combined.sbatch ./combined 10
 sbatch --job-name=combined_4n_12t --nodes=4 --cpus-per-task=12 combined.sbatch ./combined 12
 
 sleep 30s

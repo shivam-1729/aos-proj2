@@ -15,4 +15,6 @@ module load gcc/12.3.0 mvapich2/2.3.7-1
 mpicc -c -g -Wall -std=gnu99 -I. harness.c -o harness.o
 mpicc -o mpi1 -g -Wall -std=gnu99 -I.  gtmpi1.c harness.o -lm
 mpicc -o mpi2 -g -Wall -std=gnu99 -I.  gtmpi2.c harness.o -lm
-mpiexec --ntasks $2 ./mpi1 $2
+
+# mpiexec --ntasks $2 ./mpi1 $2         # Not sure if this will assign a process to each node
+srun --nodes $SLURM_NNODES --cpus-per-task 1 ./mpi1 $2

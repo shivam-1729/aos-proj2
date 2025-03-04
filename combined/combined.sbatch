@@ -12,6 +12,7 @@ echo "Started on `/bin/hostname` with $SLURM_NNODES nodes, $SLURM_CPUS_PER_TASK 
 
 module load gcc/12.3.0 mvapich2/2.3.7-1
 
-mpicc.mpich -o combined -g -Wall -fopenmp -std=gnu99 -I. gtcombined.c harness.o -lgomp -lm
+mpicc -c -g -Wall -fopenmp -std=gnu99 -I. harness.c -o harness.o
+mpicc -o combined -g -Wall -fopenmp -std=gnu99 -I. gtcombined.c ../omp/gtmp2.c ../mpi/gtmpi1.c harness.o -lm
 # mpiexec --ntasks $2 ./mpi1 $2         # Not sure if this will assign a process to each node
 srun --nodes $SLURM_NNODES --cpus-per-task $SLURM_CPUS_PER_TASK ./combined $2
